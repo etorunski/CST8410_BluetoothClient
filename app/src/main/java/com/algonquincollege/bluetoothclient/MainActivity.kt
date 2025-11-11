@@ -131,13 +131,10 @@ class MainActivity : ComponentActivity() {
 
 
                         //Step 12: writing to the server
-                        characteristic.setValue("Eric wuz here")
+                        characteristic.setValue("Eric says hello!")
                         gatt.writeCharacteristic(characteristic)
                         //end of step 12
 
-
-
-                    Log.d(TAG, "Service UUID: $serviceUUID, characteristic UUID:${characteristic.uuid}")
                     Log.d(TAG, "Service UUID: $serviceUUID, characteristic UUID:${characteristic.uuid}")
                     }
               //  }
