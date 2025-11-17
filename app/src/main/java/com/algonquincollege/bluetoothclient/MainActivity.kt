@@ -53,6 +53,7 @@ class MainActivity : ComponentActivity() {
 
     private val connectedCallback = object : BluetoothGattCallback() {
 
+        //This gets called when the client either connects or disconnects from a Server:
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
 
             when(newState)
@@ -73,6 +74,7 @@ class MainActivity : ComponentActivity() {
         }
 
 
+        //This gets called whenever you request to read a Characteristic on the server:
         // Step 11a:
         override fun onCharacteristicRead(
             gatt: BluetoothGatt?,
@@ -85,6 +87,8 @@ class MainActivity : ComponentActivity() {
         }
         //////////////end of step 11a:
 
+
+        //This gets called whenever you request to write to a Characteristic on the server:
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt?,
             characteristic: BluetoothGattCharacteristic?,
@@ -97,6 +101,7 @@ class MainActivity : ComponentActivity() {
         }
 
         //step 13a:
+        //This gets called whenever someone else changes a Characteristic on the server:
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt?,
             characteristic: BluetoothGattCharacteristic?
