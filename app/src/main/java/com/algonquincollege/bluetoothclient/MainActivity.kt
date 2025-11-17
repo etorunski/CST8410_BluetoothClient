@@ -22,14 +22,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.algonquincollege.bluetoothclient.ui.theme.BluetoothClientTheme
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import java.util.UUID
 
 class MainActivity : ComponentActivity() {
@@ -175,6 +183,7 @@ class MainActivity : ComponentActivity() {
                     scanner?.stopScan(object: ScanCallback() {
                         override fun onScanResult(callbackType: Int, result: ScanResult?) {
                             super.onScanResult(callbackType, result)
+
                         }
                         override fun onScanFailed(errorCode: Int) {
                             super.onScanFailed(errorCode)
@@ -248,10 +257,38 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+
+    var foundUUID =remember{ mutableStateOf("")}
+
+    val cntxt = LocalContext.current
+
+    Column(modifier = modifier) {
+        //This opens the QR scanner
+        Button(onClick = {
+            val options = GmsBarcodeScannerOptions.Builder().setBarcodeFormats(
+                Barcode.FORMAT_QR_CODE //pick which barcodes to scan for.Barcode.FORMAT_AZTEC
+
+            ).build()
+            val scanner = GmsBarcodeScanning.getClient(cntxt, options)
+            scanner.startScan()
+                .addOnSuccessListener { barcode ->
+                    // Task completed successfully, connect to UUID with bluetooth
+                    val rawValue = barcode.rawValue
+                    foundUUID.value = rawValue.toString()
+                }
+                .addOnCanceledListener {
+                    // Task canceled
+                }
+                .addOnFailureListener { e ->
+                    ;
+                    // Task failed with an exception
+                }
+        })
+        { Text("Open QR Scanner") }
+
+        if(foundUUID.value.isNotEmpty())
+            Text("Scanned UUID: $foundUUID.value")
+    }
 }
 
 @Preview(showBackground = true)
