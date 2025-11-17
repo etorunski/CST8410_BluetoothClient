@@ -263,31 +263,29 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     val cntxt = LocalContext.current
 
     Column(modifier = modifier) {
-        //This opens the QR scanner
+        //This button opens the QR scanner:
         Button(onClick = {
             val options = GmsBarcodeScannerOptions.Builder().setBarcodeFormats(
                 Barcode.FORMAT_QR_CODE //pick which barcodes to scan for.Barcode.FORMAT_AZTEC
 
             ).build()
             val scanner = GmsBarcodeScanning.getClient(cntxt, options)
-            scanner.startScan()
-                .addOnSuccessListener { barcode ->
+            scanner.startScan().addOnSuccessListener { barcode ->
                     // Task completed successfully, connect to UUID with bluetooth
                     val rawValue = barcode.rawValue
                     foundUUID.value = rawValue.toString()
                 }
                 .addOnCanceledListener {
-                    // Task canceled
+                    // Task canceled, nothing found
                 }
-                .addOnFailureListener { e ->
-                    ;
-                    // Task failed with an exception
-                }
+                .addOnFailureListener { e ->     // Task failed with an exception
+                 }
         })
         { Text("Open QR Scanner") }
 
+        //when the UUID string is not empty, show the UUID:
         if(foundUUID.value.isNotEmpty())
-            Text("Scanned UUID: $foundUUID.value")
+            Text("Scanned UUID: ${foundUUID.value}")
     }
 }
 
