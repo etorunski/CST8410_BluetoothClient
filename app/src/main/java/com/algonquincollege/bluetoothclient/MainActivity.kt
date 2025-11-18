@@ -84,6 +84,11 @@ class MainActivity : ComponentActivity() {
             super.onCharacteristicRead(gatt, characteristic, status)
             if(status == BluetoothGatt.GATT_SUCCESS)
                 Log.d(TAG, "The current value is: ${String(characteristic!!.value)}")
+
+            //Step 12: writing to the server
+            characteristic!!.setValue("Eric says hello!")
+            gatt!!.writeCharacteristic(characteristic)
+            //end of step 12
         }
         //////////////end of step 11a:
 
@@ -133,23 +138,17 @@ class MainActivity : ComponentActivity() {
                     val serviceUUID = service!!.getUuid()
 
 
-                    var characteristics = service.getCharacteristics()
-                    for(characteristic in characteristics) {
-                        //Step 11:
-                        gatt.setCharacteristicNotification(characteristic, true)
+                    var characteristic = service.getCharacteristic(UUID.fromString("0000180D-0000-1000-8000-00805F9B34FB"))
 
-                        gatt.readCharacteristic(characteristic) //this triggers
-                        //end of step 11
+                    //Step 11: Tell server to notify you if characteristic changes
+                    gatt.setCharacteristicNotification(characteristic, true)
 
 
-
-                        //Step 12: writing to the server
-                        characteristic.setValue("Eric says hello!")
-                        gatt.writeCharacteristic(characteristic)
-                        //end of step 12
+                    gatt.readCharacteristic(characteristic) //this triggers onCharacteristicRead( ) when finished
+                    //end of step 11
 
                     Log.d(TAG, "Service UUID: $serviceUUID, characteristic UUID:${characteristic.uuid}")
-                    }
+
               //  }
             }
         }
